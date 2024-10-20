@@ -1,0 +1,58 @@
+services:
+  redis:
+    image: redis:alpine 
+    env_file:
+      - .env
+    ports:
+      - "${EXPOSED_REDIS_PORT}:${REDIS_PORT}"
+    networks:
+      - inference_service_net
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  fastapi:
+    build: .
+    command: uvicorn app.main:app --reload --host ${FAST_API_HOST} --port ${FAST_API_PORT}
+    ports:
+      - "${FAST_API_PORT}:${FAST_API_PORT}"
+    depends_on:
+      redis:
+        condition: service_healthy 
+    env_file:
+      - .env
+    networks:
+      - inference_service_net
+
+  celery_workers:
+    build: .
+    command: celery -A app.worker worker --loglevel=info
+    depends_on:
+      redis:
+        condition: service_healthy
+    env_file:
+      - .env
+    networks:
+      - inference_service_net
+    restart: always  # Restart the worker if it crashes
+
+  tests:
+    build: .
+    command: sh -c "python -m unittest discover -s tests -p 'test_*.py'"
+    depends_on:
+      - fastapi
+      - celery_workers
+    env_file:
+      - .env
+    networks:
+      - inference_service_net
+
+networks:
+  inference_service_net:
+    name: inference_service_net
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.30.0.0/16
