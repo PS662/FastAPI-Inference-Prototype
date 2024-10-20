@@ -1,0 +1,22 @@
+{
+  "vicuna_base": {
+    "path": "./models/vicuna-7b-base",
+    "type": "base"
+  },
+  "vicuna_f16": {
+    "path": "./models/medusa-vicuna-7b-F16/lmsys__vicuna-7B-v1.3-F16.gguf",
+    "type": "medusa"
+  },
+  "vicuna_q2": {
+    "path": "./models/vicuna-7b-Q2/vicuna-7b-v1.5.Q2_K.gguf",
+    "type": "base"
+  },
+  "medusa_base": {
+    "path": "./models/medusa-vicuna-7b",
+    "type": "medusa"
+  },
+  "medusa_quantised": {
+    "path": "./models/medusa-vicuna-7b-quantised",
+    "type": "medusa"
+  }
+}

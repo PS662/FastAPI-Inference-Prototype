@@ -8,3 +8,4 @@ requests==2.28.2
 uvicorn==0.21.1
 httpx==0.23.3
 python-dotenv==1.0.1
+llama-cpp-python==0.3.1
