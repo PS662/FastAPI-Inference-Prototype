@@ -7,6 +7,8 @@ from fastapi.staticfiles import StaticFiles
 import redis
 import os
 from pydantic import BaseModel
+from fastapi.openapi.utils import get_openapi
+from fastapi import FastAPI
 
 # Redis Configuration
 redis_host = os.getenv("REDIS_HOST", "localhost")
@@ -82,6 +84,15 @@ async def get_all_tasks():
     keys = redis_conn.keys()
     task_ids = [key.decode("utf-8") for key in keys]
     return {"tasks": task_ids}
+
+@app.get("/openapi.json")
+async def get_open_api_endpoint():
+    return get_openapi(
+        title="FastAPI Inference Service",
+        version="1.0.0",
+        description="This is the API for the inference service with dynamic batching and speculative decoding.",
+        routes=app.routes,
+    )
 
 @app.get("/")
 async def read_root(request: FastAPIRequest):

@@ -1,7 +1,7 @@
 ### API Changes ###
 
 - [ ] Python packaging
-- [ ] Dockerfile
+- [x] Dockerfile
 - [ ] Split into model, celery and API into microservices
 
 ### Design additions ###
@@ -17,4 +17,5 @@
 
 ### Others ###
 - [ ] Add medusa head
-- [ ] Add proper dynamic batching, currently we are using redis to mimin batching
+- [ ] Add proper dynamic batching, currently we are using redis to mimic batching
+- [ ] Need to do benchmarking with different quantization models, medusa, (proper) dyn batching abd speculative decoding
