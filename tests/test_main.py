@@ -48,7 +48,7 @@ class TestFastAPIEndpoints(unittest.TestCase):
             
             response = client.get("/get_task_status/some-task-id")
             self.assertEqual(response.status_code, 200)
-            self.assertEqual(response.json(), {"status": "finished", "result": "Task completed"})
+            self.assertEqual(response.json(), {"status": "SUCCESS", "result": "Task completed"})
 
     def test_generate(self):
         """Test generating text with options."""
@@ -68,7 +68,7 @@ class TestFastAPIEndpoints(unittest.TestCase):
             self.assertEqual(response.status_code, 200)
             self.assertEqual(
                 response.json(),
-                {"status": "finished", "result": "Generated text"}
+                {"status": "SUCCESS", "result": "Generated text"}
             )
 
     def test_list_tasks(self):

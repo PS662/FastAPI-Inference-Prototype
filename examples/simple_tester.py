@@ -7,7 +7,7 @@ import json
 from dotenv import dotenv_values
 
 # Load environment configuration
-env_config = dotenv_values("config/.local_env")
+env_config = dotenv_values("config/local.env")
 
 DEFAULT_CONFIG = {
     "FAST_API_HOST": env_config.get("FAST_API_HOST", "localhost"),

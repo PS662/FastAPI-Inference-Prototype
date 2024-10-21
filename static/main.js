@@ -1,7 +1,7 @@
 async function sendMessage() {
     const responseElement = document.getElementById('response');
+    const spinner = document.getElementById('spinner');
     const userInput = document.getElementById('userInput').value;
-    responseElement.innerHTML = '<p>Sending...</p>';
 
     try {
         const response = await fetch('/send_text', {
@@ -21,7 +21,8 @@ async function sendMessage() {
         const taskId = data.task_id;
 
         if (taskId) {
-            await pollTaskStatus(taskId); // Await the polling result
+            spinner.classList.remove('hidden');  // Show spinner
+            await pollTaskStatus(taskId);
         } else {
             responseElement.innerHTML = '<p>Error: No task ID returned.</p>';
         }
@@ -31,26 +32,30 @@ async function sendMessage() {
     }
 }
 
-async function pollTaskStatus(taskId, targetStatus = 'finished') {
+async function pollTaskStatus(taskId, targetStatus = 'SUCCESS') {
     const responseElement = document.getElementById('response');
+    const spinner = document.getElementById('spinner');
 
     try {
-        const response = await fetch(`/poll_task_status/${taskId}?target_status=${targetStatus}`);
+        const response = await fetch(`/poll_task_status/${taskId}?target_status="SUCCESS"`);
         const result = await response.json();
 
-        if (result.status === 'finished') {
+        if (result.status === 'SUCCESS') {
             responseElement.innerHTML = `
                 <div class="response-item">
-                    <p><strong>Status:</strong> ${result.status}</p>
                     <p><strong>Result:</strong> ${result.result}</p>
                 </div>`;
         } else if (result.status === 'failed') {
             responseElement.innerHTML = '<p>Error: Task failed.</p>';
         } else {
-            responseElement.innerHTML = '<p>Unexpected status received.</p>';
+            responseElement.innerHTML = '<p>Status is still pending...</p>';
+            setTimeout(() => pollTaskStatus(taskId, targetStatus), 1000); // Retry polling
+            return;  // Exit to avoid hiding spinner prematurely
         }
     } catch (error) {
         responseElement.innerHTML = '<p>Error fetching task status.</p>';
         console.error('Error:', error);
+    } finally {
+        spinner.classList.add('hidden');  // Hide spinner
     }
 }

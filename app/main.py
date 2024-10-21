@@ -49,7 +49,7 @@ async def generate(request: InferenceRequest):
 
     try:
         result = task.get(timeout=50)  # Block until task finishes
-        return {"status": "finished", "result": result}
+        return {"status": task.state, "result": result}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Task failed: {str(e)}")
 
@@ -72,30 +72,34 @@ async def health_check():
 async def get_task_status(req_id: str):
     """Retrieve the status of a task."""
     task = AsyncResult(req_id)
-    if task.state == "PENDING":
-        return {"status": "processing"}
-    elif task.state == "SUCCESS":
-        return {"status": "finished", "result": task.result}
+    if task.state == "SUCCESS":
+        return {"status": task.state, "result": task.result}
     else:
-        return {"status": "failed"}
+        return {"status": task.state}
     
 @app.get("/poll_task_status/{req_id}")
-async def poll_task_status(req_id: str, target_status: str = "finished", timeout: int = 30):
+async def poll_task_status(req_id: str, target_status: str = "SUCCESS", timeout: int = 30, retry_limit=3):
     """Long-poll task status until the target status or timeout."""
     start_time = asyncio.get_event_loop().time()
-
+    retries = 0
     while True:
         task = AsyncResult(req_id)
+        current_status = task.state
 
-        if task.state == "SUCCESS" and target_status == "finished":
-            return {"status": "finished", "result": task.result}
-        elif task.state == "FAILURE":
-            return {"status": "failed"}
+        if current_status == target_status or current_status == "SUCCESS":
+            return {"status": task.state, "result": task.result if current_status == "SUCCESS" else None}
+        elif current_status == "FAILURE":
+            return {"status": task.state}
 
         elapsed_time = asyncio.get_event_loop().time() - start_time
         if elapsed_time > timeout:
+            retries += 1
+            if retries >= retry_limit:
+                print (f"Max retries reached")
+                return {"status": 408, "result": "Connection Timeout"}
             raise HTTPException(status_code=408, detail="Task polling timed out")
-        await asyncio.sleep(2)
+
+        await asyncio.sleep(1)  
 
 @app.get("/tasks/")
 async def get_all_tasks():
