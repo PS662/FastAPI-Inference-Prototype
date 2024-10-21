@@ -36,24 +36,30 @@ This prototype includes a simple web-based interface to interact with the infere
 
 ### Usage
 
-1. **Launch the Service:**  
+**Launch the Service:**  
    Ensure the FastAPI app and Celery workers are running. You can start the services with:
 
    ```bash
    make start-inference-service
    ```
 
-2. **Access the Web Interface:**  
+**Access the Web Interface:**  
    Open your browser and go to:  
    [http://localhost:8000](http://localhost:8000)
 
-3. **Send a Text Prompt:**  
+**Send a Text Prompt:**  
    - Enter your text in the input field.
    - Click the **"Send Message"** button to submit the prompt.
    - The response will be displayed on the same page when it becomes available.
 
-4. **API Polling:**  
+**API Polling:**  
    - The UI automatically polls the `/poll_task_status` endpoint to update the result once ready.
+
+### UI Files
+
+- **HTML:** Located at `templates/index.html`
+- **CSS:** Located at `static/main.css`
+- **JavaScript:** Located at `static/main.js`
 
 ## Makefile Commands
 
@@ -71,20 +77,22 @@ Use the provided ```Makefile``` commands and API to interact with the service.
 
 ## API Endpoints
 
-| Endpoint                | Method | Description                                |
-|-------------------------|--------|--------------------------------------------|
-| `/`                     | GET    | Home page.                                 |
-| `/health_check`         | GET    | Check the health of the service.           |
-| `/send_text`            | POST   | Submit a text prompt for inference.        |
-| `/generate`             | POST   | Generate text from a prompt.               |
-| `/get_task_status/{id}` | GET    | Get the status of a specific task by ID.   |
-| `/tasks/`               | GET    | List all tasks.                            |
+| Endpoint                  | Method | Description                                |
+|---------------------------|--------|--------------------------------------------|
+| `/`                       | GET    | Home page.                                 |
+| `/health_check`           | GET    | Check the health of the service.           |
+| `/send_text`              | POST   | Submit a text prompt for inference.        |
+| `/generate`               | POST   | Generate text from a prompt.               |
+| `/get_task_status/{id}`   | GET    | Get the status of a specific task by ID.   |
+| `/poll_task_status/{id}`  | GET    | Poll the status of a specific task by ID.   |
+| `/tasks/`                 | GET    | List all tasks.                            |
 
+## Configuration
 
+- **Environment Variables:** Stored in `config/local.env`.
+- **Model Configuration:** Defined in `config/model_config.json`.
 
 ## Example Usage
-
-### Using `simple_tester.py`:
 
 **Send a text prompt:**
 ```bash
@@ -111,14 +119,6 @@ python examples/simple_tester.py --url http://localhost:8000 tasks
 python examples/simple_tester.py --url http://localhost:8000 get-task-status     --task-id <TASK_ID>
 ```
 
-
-
-### UI Files
-
-- **HTML:** Located at `templates/index.html`
-- **CSS:** Located at `static/main.css`
-- **JavaScript:** Located at `static/main.js`
-
 ## Documentation
 
 To view generated docs, go:
@@ -126,7 +126,6 @@ To view generated docs, go:
 ```
 http://localhost:8000/docs
 http://localhost:8000/redoc
-
 ```
 
 If you need to view/save json:
@@ -135,7 +134,3 @@ If you need to view/save json:
 http://localhost:8000/openapi.json
 ```
 
-## Configuration
-
-- **Environment Variables:** Stored in `config/local.env`.
-- **Model Configuration:** Defined in `config/model_config.json`.

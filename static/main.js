@@ -31,11 +31,11 @@ async function sendMessage() {
     }
 }
 
-async function pollTaskStatus(taskId) {
+async function pollTaskStatus(taskId, targetStatus = 'finished') {
     const responseElement = document.getElementById('response');
 
     try {
-        const response = await fetch(`/poll_task_status/${taskId}`); 
+        const response = await fetch(`/poll_task_status/${taskId}?target_status=${targetStatus}`);
         const result = await response.json();
 
         if (result.status === 'finished') {

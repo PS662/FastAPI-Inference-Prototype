@@ -80,25 +80,22 @@ async def get_task_status(req_id: str):
         return {"status": "failed"}
     
 @app.get("/poll_task_status/{req_id}")
-async def poll_task_status(req_id: str, timeout: int = 30):
-    """Long-poll task status until completion or timeout."""
+async def poll_task_status(req_id: str, target_status: str = "finished", timeout: int = 30):
+    """Long-poll task status until the target status or timeout."""
     start_time = asyncio.get_event_loop().time()
 
     while True:
         task = AsyncResult(req_id)
-        if task.state == "SUCCESS":
+
+        if task.state == "SUCCESS" and target_status == "finished":
             return {"status": "finished", "result": task.result}
         elif task.state == "FAILURE":
             return {"status": "failed"}
 
-        # Check if we've reached the timeout limit
         elapsed_time = asyncio.get_event_loop().time() - start_time
         if elapsed_time > timeout:
             raise HTTPException(status_code=408, detail="Task polling timed out")
-
-        # Wait for a short interval before polling again
         await asyncio.sleep(2)
-
 
 @app.get("/tasks/")
 async def get_all_tasks():
