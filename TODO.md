@@ -3,6 +3,7 @@
 - [ ] Python packaging
 - [x] Dockerfile
 - [ ] Split into model, celery and API into microservices
+- [ ] Maintain History
 
 ### Design additions ###
 - [ ] Load balancer
