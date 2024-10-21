@@ -31,7 +31,7 @@ services:
 
   celery_workers:
     build: .
-    command: celery -A app.worker:celery worker --loglevel=info
+    command: celery -A app.worker:celery worker --loglevel=info -c ${CELERY_WORKER_CONCURRENCY}
     depends_on:
       redis:
         condition: service_healthy

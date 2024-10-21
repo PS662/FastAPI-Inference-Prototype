@@ -13,7 +13,7 @@ convert:
 
 # run locally
 run-worker:
-	celery -A app.worker worker --loglevel=info
+	celery -A app.worker worker --loglevel=info -c $(CELERY_WORKER_CONCURRENCY)
 
 run-app:
 	uvicorn app.main:app --reload --host ${FAST_API_HOST} --port ${FAST_API_PORT}
@@ -23,7 +23,7 @@ run-tests:
 
 # Following commands are for docker compose
 start-inference-service:
-	docker compose up --build -d
+	docker compose up --build -d --scale celery_workers=${CELERY_WORKER_SCALE}
 
 stop-inference-service:
 	docker compose down
