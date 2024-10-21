@@ -30,6 +30,31 @@ In the future, I will package the setup into a Python package for easier distrib
 └── Makefile               # Automation commands
 ```
 
+## UI Overview
+
+This prototype includes a simple web-based interface to interact with the inference service.
+
+### Usage
+
+1. **Launch the Service:**  
+   Ensure the FastAPI app and Celery workers are running. You can start the services with:
+
+   ```bash
+   make start-inference-service
+   ```
+
+2. **Access the Web Interface:**  
+   Open your browser and go to:  
+   [http://localhost:8000](http://localhost:8000)
+
+3. **Send a Text Prompt:**  
+   - Enter your text in the input field.
+   - Click the **"Send Message"** button to submit the prompt.
+   - The response will be displayed on the same page when it becomes available.
+
+4. **API Polling:**  
+   - The UI automatically polls the `/poll_task_status` endpoint to update the result once ready.
+
 ## Makefile Commands
 
 Use the provided ```Makefile``` commands and API to interact with the service.
@@ -54,6 +79,8 @@ Use the provided ```Makefile``` commands and API to interact with the service.
 | `/generate`             | POST   | Generate text from a prompt.               |
 | `/get_task_status/{id}` | GET    | Get the status of a specific task by ID.   |
 | `/tasks/`               | GET    | List all tasks.                            |
+
+
 
 ## Example Usage
 
@@ -83,6 +110,14 @@ python examples/simple_tester.py --url http://localhost:8000 tasks
 ```bash
 python examples/simple_tester.py --url http://localhost:8000 get-task-status     --task-id <TASK_ID>
 ```
+
+
+
+### UI Files
+
+- **HTML:** Located at `templates/index.html`
+- **CSS:** Located at `static/main.css`
+- **JavaScript:** Located at `static/main.js`
 
 ## Documentation
 

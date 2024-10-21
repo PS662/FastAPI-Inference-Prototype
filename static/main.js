@@ -1,8 +1,6 @@
 async function sendMessage() {
     const responseElement = document.getElementById('response');
     const userInput = document.getElementById('userInput').value;
-    const modelName = "vicuna_q2"; // Example model name
-
     responseElement.innerHTML = '<p>Sending...</p>';
 
     try {
@@ -13,23 +11,20 @@ async function sendMessage() {
             },
             body: JSON.stringify({
                 text: userInput,
-                model_name: modelName,
+                model_name: 'vicuna_q2',
                 dyn_batch: 1,
-                speculative_decoding: true
+                speculative_decoding: false,
             }),
         });
 
-        if (!response.ok) {
-            const errorText = await response.text();
-            responseElement.innerHTML = `<p>Error: ${errorText}</p>`;
-            return;
-        }
-
         const data = await response.json();
-        responseElement.innerHTML = `<p>Task ID: ${data.task_id}</p><p>Waiting for response...</p>`;
+        const taskId = data.task_id;
 
-        // Start polling for task status
-        await pollTaskStatus(data.task_id);
+        if (taskId) {
+            await pollTaskStatus(taskId); // Await the polling result
+        } else {
+            responseElement.innerHTML = '<p>Error: No task ID returned.</p>';
+        }
     } catch (error) {
         responseElement.innerHTML = '<p>Error sending message.</p>';
         console.error('Error:', error);
@@ -40,19 +35,19 @@ async function pollTaskStatus(taskId) {
     const responseElement = document.getElementById('response');
 
     try {
-        while (true) {
-            const response = await fetch(`/poll_task_status/${taskId}`);
-            const result = await response.json();
+        const response = await fetch(`/poll_task_status/${taskId}`); 
+        const result = await response.json();
 
-            if (result.status === 'finished' || result.status === 'failed') {
-                responseElement.innerHTML = `
+        if (result.status === 'finished') {
+            responseElement.innerHTML = `
+                <div class="response-item">
                     <p><strong>Status:</strong> ${result.status}</p>
-                    <p><strong>Result:</strong> ${result.result}</p>`;
-                break;
-            }
-
-            // Wait for 2 seconds before polling again
-            await new Promise(resolve => setTimeout(resolve, 2000));
+                    <p><strong>Result:</strong> ${result.result}</p>
+                </div>`;
+        } else if (result.status === 'failed') {
+            responseElement.innerHTML = '<p>Error: Task failed.</p>';
+        } else {
+            responseElement.innerHTML = '<p>Unexpected status received.</p>';
         }
     } catch (error) {
         responseElement.innerHTML = '<p>Error fetching task status.</p>';
