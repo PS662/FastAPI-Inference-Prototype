@@ -96,12 +96,12 @@ Use the provided ```Makefile``` commands and API to interact with the service.
 
 **Send a text prompt:**
 ```bash
-python examples/simple_tester.py --url http://localhost:8000 send-text     --prompt "Hello, how are you?" --model-name vicuna_q2
+python examples/simple_tester.py --url http://localhost:8000 send-text --prompt "Hello, how are you?" --model-name vicuna_q2
 ```
 
 **Generate text:**
 ```bash
-python examples/simple_tester.py --url http://localhost:8000 generate     --prompt "Hello, how are you?" --model-name vicuna_q2
+python examples/simple_tester.py --url http://localhost:8000 generate --prompt "Hello, how are you?" --model-name vicuna_q2
 ```
 
 **Health Check:**
@@ -116,7 +116,7 @@ python examples/simple_tester.py --url http://localhost:8000 tasks
 
 **Get task status:**
 ```bash
-python examples/simple_tester.py --url http://localhost:8000 get-task-status     --task-id <TASK_ID>
+python examples/simple_tester.py --url http://localhost:8000 get-task-status --task-id <TASK_ID>
 ```
 
 ## Documentation
